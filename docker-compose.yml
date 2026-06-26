@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  monitoring:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: grafana-monitoring
+    restart: unless-stopped
+    environment:
+      - GRAFANA_URL=${GRAFANA_URL}
+      - GRAFANA_API_TOKEN=${GRAFANA_API_TOKEN}
+      - CLAUDE_API_KEY=${CLAUDE_API_KEY}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TELEGRAM_CHAT_IDS=${TELEGRAM_CHAT_IDS}
+      - GLPI_URL=${GLPI_URL}
+      - GLPI_API_TOKEN=${GLPI_API_TOKEN}
+      - GLPI_APP_TOKEN=${GLPI_APP_TOKEN}
+      - GLPI_USER_ID=${GLPI_USER_ID}
+      - SMTP_SERVER=${SMTP_SERVER}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - EMAIL_FROM=${EMAIL_FROM}
+      - EMAIL_TO=${EMAIL_TO}
+      - DEBUG=${DEBUG:-false}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - SCHEDULER_INTERVAL_MINUTES=${SCHEDULER_INTERVAL_MINUTES:-5}
+
+    volumes:
+      - ./config.yaml:/app/config.yaml:ro
+      - ./monitoring.log:/app/monitoring.log
+
+    networks:
+      - monitoring-net
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  monitoring-net:
+    driver: bridge

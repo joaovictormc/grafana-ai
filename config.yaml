@@ -1,0 +1,82 @@
+# Configuração de Dashboards e Métricas
+
+dashboards:
+  - name: "Infra"
+    uid: "admqm9m"
+    description: "Monitoramento de Infraestrutura (CPU/Rede)"
+    refresh_interval: 5
+    critical_metrics:
+      - metric: "CPU utilization"
+        threshold_warning: 80  # %
+        threshold_critical: 90
+
+      - metric: "Uso de Rede"
+        threshold_warning: 75  # %
+        threshold_critical: 90
+
+# Filtros de Hosts Críticos (para alertas diferentes)
+host_groups:
+  - group: "firewall"
+    hosts: ["Mk-Firewall", "Mk Galpao"]
+    priority: "high"  # Sempre alertar esses
+
+  - group: "aps"
+    hosts: ["U7 Pro - Centro GLP", "U7 Pro - Sala 803", "U7 Pro - Sala 902"]
+    priority: "medium"
+
+  - group: "switches"
+    hosts: ["Switch Rack 803", "Switch Rack 902", "Switch Rack 906"]
+    priority: "medium"
+
+# Canais de Notificação
+notifications:
+  whatsapp:
+    enabled: true
+    provider: "evolution"
+
+  telegram:
+    enabled: true
+
+  glpi:
+    enabled: true
+    create_ticket: true
+
+  email:
+    enabled: true
+    html_template: true
+
+# Limites Globais
+thresholds:
+  # Uptime
+  uptime_min_percent: 95  # % uptime mínimo aceitável
+
+  # Latência
+  latency_warning_ms: 100
+  latency_critical_ms: 200
+
+  # Taxa de erro de interface
+  error_rate_warning_pps: 100  # packets per second
+  error_rate_critical_pps: 500
+
+  # CPU
+  cpu_warning_percent: 80
+  cpu_critical_percent: 90
+
+  # Memória
+  memory_warning_percent: 85
+  memory_critical_percent: 95
+
+# LLM Analyzer
+llm:
+  model: "claude-3-5-haiku-20241022"  # Haiku para custo
+  temperature: 0.5
+  max_tokens: 500
+  cache_enabled: true
+  cache_ttl_seconds: 300  # Não reanalisa mesmo dado em 5min
+
+# Scheduler
+scheduler:
+  interval_minutes: 5
+  retry_on_failure: 3
+  retry_backoff_seconds: 30
+  concurrent_tasks: false
